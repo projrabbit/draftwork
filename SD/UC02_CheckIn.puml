@@ -1,0 +1,54 @@
+@startuml UC02_CheckIn
+title UC-02: Thực hiện Check-in
+
+actor "Nhân viên" as NV
+participant "Mobile App" as App
+participant "API Server" as API
+participant "Fraud\nDetection" as Fraud
+database "Database" as DB
+
+NV -> App : Nhấn nút Check-in
+App -> App : Thu tọa độ GPS\n(lat, lng, altitude, accuracy)
+App -> API : POST /attendance/check-in\n{employee_id, device_fingerprint,\nlat, lng, altitude, gps_accuracy}
+
+API -> DB : SELECT Employee, Device, Shift\n(xác thực device, lấy default_shift)
+DB --> API : Employee + Shift + Device info
+
+API -> Fraud : Kiểm tra chống gian lận\n(mock_location, gps_spoofing,\nbuddy_punch, unknown_device)
+Fraud -> DB : SELECT lịch sử Device, vị trí gần nhất
+DB --> Fraud : Dữ liệu lịch sử
+Fraud --> API : FraudResult\n{confidence_score, flags}
+
+API -> DB : SELECT Geofence active\nphù hợp với altitude
+DB --> API : Danh sách Geofence
+
+API -> API : Đối chiếu (lat,lng,altitude)\nvới Geofence
+
+alt Phát hiện gian lận (confidence_score < 40)
+    API -> DB : INSERT AttendanceRecord\n(type=check_in, status=rejected,\nrejection_reason=fraud)
+    API -> DB : INSERT FraudDetection
+    API -> DB : INSERT AuditLog
+    API --> App : 200 {status: rejected,\nreason: "mock_location / spoofing"}
+    App --> NV : Thông báo từ chối + lý do
+
+else Ngoài geofence
+    API -> DB : INSERT AttendanceRecord\n(status=rejected,\nrejection_reason=outside_geofence)
+    API -> DB : INSERT FraudDetection
+    API -> DB : INSERT AuditLog
+    API --> App : 200 {status: rejected,\nreason: "outside_geofence"}
+    App --> NV : Thông báo ngoài vùng cho phép
+
+else GPS accuracy kém (>50m)
+    API --> App : 400 {error: "GPS accuracy quá thấp"}
+    App --> NV : Cảnh báo tín hiệu GPS yếu
+
+else Hợp lệ
+    API -> API : Tính is_late\n(timestamp vs shift.start_time)
+    API -> DB : INSERT AttendanceRecord\n(type=check_in, status=approved,\ngeofence_id, shift_id, is_late)
+    API -> DB : INSERT FraudDetection\n(confidence_score, all flags=false)
+    API -> DB : INSERT AuditLog (CHECK_IN)
+    API --> App : 200 {status: approved,\nfloor: "Tầng X, Tòa nhà Y",\nis_late: false}
+    App --> NV : Chấm công thành công
+end
+
+@enduml

@@ -1,0 +1,55 @@
+@startuml DFD_L2_FraudDetection
+title DFD Level 2 – Tiến trình 3.0: Kiểm tra Chống gian lận\n(UC-11: Mock Location/GPS Spoofing,\nUC-12: Buddy Punching)
+
+skinparam rectangle {
+  BackgroundColor<<external>> LightYellow
+  BorderColor<<external>> DarkGoldenRod
+}
+skinparam rectangle {
+  BackgroundColor<<process>> LightSkyBlue
+  BorderColor<<process>> Navy
+}
+skinparam database {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+
+rectangle "Tiến trình 2.0\nChấm công" <<external>> as P2
+
+rectangle "3.1\nKiểm tra\nMock Location" <<process>> as P31
+rectangle "3.2\nKiểm tra\nGPS Spoofing" <<process>> as P32
+rectangle "3.3\nKiểm tra\nBuddy Punching" <<process>> as P33
+rectangle "3.4\nTính\nConfidence Score" <<process>> as P34
+rectangle "3.5\nLưu kết quả\nFraudDetection" <<process>> as P35
+
+database "D2: Attendance\nRecord (history)" as D2
+database "D1: Device" as D1
+database "D3: Fraud\nDetection" as D3
+database "D5: Audit Log" as D5
+
+P2 --> P31 : GPS data + raw_signals\n(mock_location flag từ OS)
+P31 --> P31 : Đọc cờ mock location\ntừ hệ điều hành thiết bị
+P31 --> P34 : mock_location_detected (bool)
+
+P2 --> P32 : lat, lng, altitude,\ngps_accuracy, employee_id
+P32 --> D2 : SELECT 3 vị trí gần nhất\ncủa employee_id
+D2 --> P32 : lịch sử tọa độ
+P32 --> P32 : Tính speed = distance/time\nKiểm tra altitude bất thường\nKiểm tra accuracy âm
+P32 --> P34 : gps_spoofing_detected (bool)
+
+P2 --> P33 : device_fingerprint,\nemployee_id, lat, lng, timestamp
+P33 --> D1 : SELECT Device WHERE fingerprint=?
+D1 --> P33 : device + is_trusted
+P33 --> D2 : SELECT check-in gần nhất\ncùng device_fingerprint\n(employee_id khác)
+D2 --> P33 : danh sách sử dụng thiết bị
+P33 --> P33 : Phân tích impossible travel\n(speed > 200 km/h)
+P33 --> P34 : buddy_punch_suspected (bool)\nunknown_device (bool)
+
+P34 --> P34 : confidence_score = 100\n- mock: -50\n- spoofing: -40\n- unknown_device: -20\n(min = 0)
+P34 --> P35 : FraudResult {all flags,\nconfidence_score, raw_signals}
+
+P35 --> D3 : INSERT FraudDetection
+P35 --> D5 : INSERT AuditLog\n(nếu có cảnh báo)
+P35 --> P2 : FraudResult (để quyết định approve/reject)
+
+@enduml

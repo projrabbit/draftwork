@@ -1,0 +1,70 @@
+@startuml DFD_L2_SystemManagement
+title DFD Level 2 – Tiến trình 5.0: Quản lý Hệ thống\n(UC-08: Shift, UC-10: Ngoại lệ,\nUC-13: Thiết bị, UC-14: Audit Log, UC-15: Nhân viên)
+
+skinparam rectangle {
+  BackgroundColor<<external>> LightYellow
+  BorderColor<<external>> DarkGoldenRod
+}
+skinparam rectangle {
+  BackgroundColor<<process>> LightSkyBlue
+  BorderColor<<process>> Navy
+}
+skinparam database {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+
+rectangle "Admin / HR" <<external>> as Admin
+
+rectangle "5.1\nQuản lý\nNhân viên & Phòng ban" <<process>> as P51
+rectangle "5.2\nQuản lý\nCa làm việc" <<process>> as P52
+rectangle "5.3\nQuản lý\nNgoại lệ chấm công" <<process>> as P53
+rectangle "5.4\nQuản lý\nThiết bị tin cậy" <<process>> as P54
+rectangle "5.5\nTra cứu\nAudit Log" <<process>> as P55
+
+database "D1: Employee\nAccount & Device" as D1
+database "D2: Attendance\nRecord" as D2
+database "D3: Fraud\nDetection" as D3
+database "D5: Audit Log" as D5
+database "D6: Shift\n& Department" as D6
+
+' UC-15: Employee management
+Admin --> P51 : thông tin nhân viên\n(full_name, dept, role, email)
+P51 --> D1 : INSERT/UPDATE Employee, Account\n(status, is_active)
+P51 --> D6 : INSERT/UPDATE Department
+P51 --> D5 : AuditLog
+P51 --> Admin : xác nhận tạo/cập nhật
+
+' UC-08: Shift management
+Admin --> P52 : cấu hình ca\n(name, start_time, end_time,\ntolerance, apply_to_weekends)
+P52 --> P52 : kiểm tra xung đột giờ
+P52 --> D6 : INSERT/UPDATE Shift
+P52 --> D1 : UPDATE Employee.default_shift_id\n(gán ca cho nhân viên)
+P52 --> D5 : AuditLog
+P52 --> Admin : xác nhận
+
+' UC-10: Exception management
+Admin --> P53 : yêu cầu xem ngoại lệ
+P53 --> D2 : SELECT AttendanceRecord\nWHERE status=rejected OR is_late OR is_early_leave
+D2 --> P53 : danh sách ngoại lệ
+P53 --> D3 : SELECT FraudDetection (chi tiết)
+D3 --> P53 : fraud flags
+P53 --> Admin : danh sách ngoại lệ + chi tiết
+
+Admin --> P53 : quyết định phê duyệt thủ công
+P53 --> D2 : UPDATE AttendanceRecord.status='approved'
+P53 --> D5 : AuditLog (MANUAL_APPROVE)
+
+' UC-13: Device management
+Admin --> P54 : cập nhật is_trusted
+P54 --> D1 : UPDATE Device.is_trusted
+P54 --> D5 : AuditLog (DEVICE_TRUST / DEVICE_UNTRUST)
+P54 --> Admin : xác nhận
+
+' UC-14: Audit log search
+Admin --> P55 : bộ lọc (actor, action_type, time range)
+P55 --> D5 : SELECT AuditLog WHERE điều kiện
+D5 --> P55 : log entries
+P55 --> Admin : danh sách log (read-only)
+
+@enduml

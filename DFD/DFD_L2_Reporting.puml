@@ -1,0 +1,59 @@
+@startuml DFD_L2_Reporting
+title DFD Level 2 – Tiến trình 6.0: Báo cáo & Dashboard\n(UC-09: Báo cáo chấm công, UC-16: Dashboard tổng quan)
+
+skinparam rectangle {
+  BackgroundColor<<external>> LightYellow
+  BorderColor<<external>> DarkGoldenRod
+}
+skinparam rectangle {
+  BackgroundColor<<process>> LightSkyBlue
+  BorderColor<<process>> Navy
+}
+skinparam database {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+
+rectangle "HR / Admin" <<external>> as HR
+rectangle "CEO" <<external>> as CEO
+
+rectangle "6.1\nTổng hợp\nDữ liệu chấm công" <<process>> as P61
+rectangle "6.2\nTạo Báo cáo\n& Xuất file" <<process>> as P62
+rectangle "6.3\nTổng hợp\nKPI Dashboard" <<process>> as P63
+
+database "D1: Employee\n& Department" as D1
+database "D2: Attendance\nRecord" as D2
+database "D3: Fraud\nDetection" as D3
+
+' UC-09: Reports
+HR --> P61 : bộ lọc\n(from, to, dept_id, employee_id)
+P61 --> D2 : SELECT AttendanceRecord\nWHERE time_range + filters
+D2 --> P61 : raw records
+P61 --> D1 : SELECT Employee info
+D1 --> P61 : employee data
+P61 --> P61 : Tổng hợp:\n- ngày công / tổng giờ\n- số lần trễ / về sớm\n- số lần vắng mặt\n- số bị từ chối
+P61 --> P62 : aggregated data
+P61 --> HR : bảng báo cáo preview
+
+HR --> P62 : chọn format (Excel / PDF)
+P62 --> P62 : render file\n(Apache POI / jsPDF)
+P62 --> HR : file download
+
+' UC-16: Dashboard
+HR --> P63 : yêu cầu dashboard
+CEO --> P63 : yêu cầu dashboard
+P63 --> D2 : SELECT COUNT check-in hôm nay\nSUM(is_late) đi trễ hôm nay
+D2 --> P63 : KPI counts
+P63 --> D3 : SELECT COUNT fraud alerts hôm nay
+D3 --> P63 : fraud alert count
+P63 --> D1 : SELECT COUNT active employees
+D1 --> P63 : total employees
+P63 --> P63 : Tính:\n- tỷ lệ đúng giờ (%)\n- số nhân viên đang check-in\n- số cảnh báo gian lận
+P63 --> HR : Dashboard KPI + mini-map data
+P63 --> CEO : Dashboard KPI tổng quan
+
+note right of P63
+  Auto-refresh mỗi 60 giây
+end note
+
+@enduml

@@ -1,0 +1,79 @@
+@startuml DFD_Level1_Overview
+title DFD Level 1 – Tổng quan các tiến trình chính
+
+skinparam rectangle {
+  BackgroundColor<<external>> LightYellow
+  BorderColor<<external>> DarkGoldenRod
+}
+skinparam rectangle {
+  BackgroundColor<<process>> LightSkyBlue
+  BorderColor<<process>> Navy
+}
+skinparam database {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+
+' === External Entities ===
+rectangle "Nhân viên" <<external>> as NV
+rectangle "HR / Admin" <<external>> as HR
+rectangle "CEO" <<external>> as CEO
+rectangle "ArcGIS Platform" <<external>> as ARCGIS
+
+' === Processes ===
+rectangle "1.0\nXác thực\n& Phân quyền" <<process>> as P1
+rectangle "2.0\nChấm công\n(Check-in/out)" <<process>> as P2
+rectangle "3.0\nKiểm tra\nChống gian lận" <<process>> as P3
+rectangle "4.0\nQuản lý\nGIS & Geofence" <<process>> as P4
+rectangle "5.0\nQuản lý\nHệ thống" <<process>> as P5
+rectangle "6.0\nBáo cáo\n& Dashboard" <<process>> as P6
+
+' === Data Stores ===
+database "D1: Account\n& Employee" as D1
+database "D2: Attendance\nRecord" as D2
+database "D3: Fraud\nDetection" as D3
+database "D4: GIS\n(Building/Floor/Geofence)" as D4
+database "D5: Audit Log" as D5
+database "D6: Shift\n& Department" as D6
+
+' === Flows ===
+NV --> P1 : credentials
+P1 --> NV : JWT token
+P1 --> D1 : UPDATE last_login_at
+D1 --> P1 : Account record
+
+NV --> P2 : GPS data + device_fingerprint
+P2 --> NV : kết quả chấm công
+P2 --> P3 : dữ liệu GPS + device
+P3 --> P2 : FraudResult
+P2 --> D2 : INSERT AttendanceRecord
+P2 --> D5 : INSERT AuditLog (CHECK_IN/OUT)
+D4 --> P2 : Geofence active
+D6 --> P2 : Shift info
+D1 --> P2 : Employee + Device info
+
+P3 --> D3 : INSERT FraudDetection
+D2 --> P3 : lịch sử vị trí
+
+HR --> P4 : cấu hình geofence / building
+P4 --> HR : danh sách geofence trên bản đồ
+P4 --> D4 : INSERT/UPDATE Geofence, Floor, Building
+P4 --> D5 : AuditLog
+D4 --> P4 : existing geofence data
+P4 --> ARCGIS : tọa độ marker / layer_id
+ARCGIS --> P4 : Scene View data
+
+HR --> P5 : quản lý nhân viên / shift / thiết bị
+P5 --> D1 : INSERT/UPDATE Employee, Account, Device
+P5 --> D6 : INSERT/UPDATE Shift, Department
+P5 --> D5 : AuditLog
+
+HR --> P6 : bộ lọc báo cáo
+CEO --> P6 : yêu cầu dashboard
+P6 --> HR : báo cáo + dashboard KPI
+P6 --> CEO : dashboard KPI
+D2 --> P6 : AttendanceRecord (aggregate)
+D3 --> P6 : FraudDetection (count)
+D1 --> P6 : Employee info
+
+@enduml

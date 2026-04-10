@@ -1,0 +1,33 @@
+@startuml DFD_Level0_Context
+title DFD Level 0 – Context Diagram\nHệ thống Chấm công Thông minh
+
+skinparam rectangle {
+  BackgroundColor<<external>> LightYellow
+  BorderColor<<external>> DarkGoldenRod
+  FontStyle<<external>> Bold
+}
+skinparam rectangle {
+  BackgroundColor<<system>> LightSkyBlue
+  BorderColor<<system>> Navy
+}
+
+rectangle "Nhân viên\n(Mobile App)" <<external>> as NV
+rectangle "HR / Admin\n(Web Dashboard)" <<external>> as HR
+rectangle "CEO\n(Web Dashboard)" <<external>> as CEO
+rectangle "ArcGIS\nPlatform" <<external>> as ARCGIS
+
+rectangle "0\nHệ thống Chấm công\nThông minh" <<system>> as SYS
+
+NV --> SYS : Yêu cầu check-in/check-out\nThông tin GPS (lat/lng/alt)\nThông tin thiết bị
+SYS --> NV : Kết quả chấm công\nLịch sử cá nhân\nThông báo trạng thái
+
+HR --> SYS : Cấu hình geofence / shift\nQuản lý nhân viên & thiết bị\nTra cứu ngoại lệ / audit log
+SYS --> HR : Báo cáo chấm công\nBản đồ GIS 3D real-time\nDashboard KPI\nCảnh báo gian lận
+
+CEO --> SYS : Yêu cầu xem Dashboard\nYêu cầu báo cáo tổng hợp
+SYS --> CEO : Dashboard KPI tổng quan\nBáo cáo chấm công
+
+SYS --> ARCGIS : Layer ID tòa nhà\nDữ liệu tọa độ marker
+ARCGIS --> SYS : Bản đồ 3D Scene View\nXác nhận layer hợp lệ
+
+@enduml
