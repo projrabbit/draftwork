@@ -7,6 +7,11 @@ participant "API Server" as API
 participant "Fraud\nDetection" as Fraud
 database "Database" as DB
 
+note over API, Fraud
+    Chi tiết kiểm tra fraud, flags, confidence_score
+    và lưu FraudDetection tham chiếu UC-11.
+end note
+
 NV -> App : Nhấn nút Check-out
 App -> App : Thu tọa độ GPS\n(lat, lng, altitude, accuracy)
 App -> API : POST /attendance/check-out\n{employee_id, device_fingerprint,\nlat, lng, altitude, gps_accuracy}
@@ -15,39 +20,43 @@ API -> DB : SELECT AttendanceRecord cuối cùng\nWHERE employee_id=? AND type=c
 DB --> API : Check-in record (hoặc null)
 
 alt Chưa có check-in trong ngày
-    API --> App : 400 {error: "Chưa thực hiện check-in"}
-    App --> NV : Thông báo lỗi
+    API --> App : Kết quả check-out: failed_no_checkin
 else Đã có check-in
-    API -> Fraud : Kiểm tra chống gian lận
+    API -> Fraud : checkFraud(employee_id, device_fingerprint,\nlat, lng, altitude, gps_accuracy)
     Fraud --> API : FraudResult {confidence_score, flags}
 
     API -> DB : SELECT Geofence và Shift\ntương ứng
     DB --> API : Geofence + Shift info
 
-    API -> API : Đối chiếu vị trí với Geofence
+    API -> API : Kiểm tra điều kiện check-out\n(geofence, fraud_score)
     API -> API : Tính is_early_leave\n(timestamp vs shift.end_time)
 
-    alt Phát hiện gian lận
-        API -> DB : INSERT AttendanceRecord\n(type=check_out, status=rejected)
-        API -> DB : INSERT FraudDetection
-        API -> DB : INSERT AuditLog
-        API --> App : 200 {status: rejected}
-        App --> NV : Thông báo từ chối
+    alt Phát hiện gian lận (theo UC-11)
+        API -> DB : INSERT AttendanceRecord\n(type=check_out, status=rejected,\nrejection_reason=fraud_detected)
+        API -> DB : INSERT AuditLog (CHECK_OUT_REJECTED_FRAUD)
+        API --> App : Kết quả check-out: rejected
+
+    else Ngoài geofence
+        API -> DB : INSERT AttendanceRecord\n(type=check_out, status=rejected,\nrejection_reason=outside_geofence)
+        API -> DB : INSERT AuditLog (CHECK_OUT_REJECTED_GEOFENCE)
+        API --> App : Kết quả check-out: rejected
 
     else Về sớm
         API -> DB : INSERT AttendanceRecord\n(type=check_out, status=approved,\nis_early_leave=TRUE)
-        API -> DB : INSERT FraudDetection
-        API -> DB : INSERT AuditLog (CHECK_OUT)
-        API --> App : 200 {status: approved,\nis_early_leave: true}
-        App --> NV : Check-out thành công\n(ghi nhận về sớm)
+        API -> DB : INSERT AuditLog (CHECK_OUT_APPROVED_EARLY_LEAVE)
+        API --> App : Kết quả check-out: approved_early_leave
 
     else Hợp lệ
         API -> DB : INSERT AttendanceRecord\n(type=check_out, status=approved,\nis_early_leave=FALSE)
-        API -> DB : INSERT FraudDetection
-        API -> DB : INSERT AuditLog (CHECK_OUT)
-        API --> App : 200 {status: approved,\ntotal_hours: X.X}
-        App --> NV : Check-out thành công
+        API -> DB : INSERT AuditLog (CHECK_OUT_APPROVED)
+        API --> App : Kết quả check-out: approved
     end
 end
+
+App --> NV : Hiển thị thông báo trạng thái
+note right of App
+  Chi tiết payload response/toast
+  tham chiếu UC-05.
+end note
 
 @enduml
