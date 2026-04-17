@@ -1,6 +1,18 @@
 @startuml DFD_L2_Authentication
 title DFD Level 2 – Tiến trình 1.0: Xác thực & Phân quyền\n(UC-01: Đăng nhập)
 
+' ===== Layout & readability =====
+left to right direction
+skinparam Shadowing false
+skinparam linetype ortho
+skinparam defaultTextAlignment center
+skinparam ArrowColor #2F3B4A
+skinparam ArrowThickness 1.1
+skinparam ArrowFontSize 11
+skinparam nodesep 130
+skinparam ranksep 150
+hide stereotype
+
 skinparam rectangle {
   BackgroundColor<<external>> LightYellow
   BorderColor<<external>> DarkGoldenRod
@@ -24,21 +36,31 @@ rectangle "1.4\nGhi nhận\nđăng nhập" <<process>> as P14
 database "D1: Account" as D1
 database "D5: Audit Log" as D5
 
-User --> P11 : username + password
-P11 --> D1 : SELECT WHERE username=?
-D1 --> P11 : password_hash
+' ===== Position anchors (for cleaner layout) =====
+User -[hidden]right-> P11
+P11 -[hidden]down-> P12
+P12 -[hidden]down-> P13
+P13 -[hidden]down-> P14
 
-P11 --> P12 : Account record
-P12 --> D1 : kiểm tra is_active
-D1 --> P12 : is_active flag
+P11 -[hidden]right-> D1
+D1 -[hidden]down-> D5
+P14 -[hidden]right-> D5
 
-P12 --> P13 : role, employee_id (nếu hợp lệ)
-P13 --> P14 : account_id, timestamp
-P13 --> User : JWT token + role
+User -right-> P11 : username + password
+P11 -right-> D1 : SELECT WHERE username=?
+D1 -left-> P11 : password_hash
 
-P14 --> D1 : UPDATE last_login_at
-P14 --> D5 : INSERT AuditLog (LOGIN)
+P11 -down-> P12 : Account record
+P12 -right-> D1 : kiểm tra is_active
+D1 -left-> P12 : is_active flag
 
-P12 --> User : lỗi (sai mật khẩu / tài khoản bị khóa)
+P12 -down-> P13 : role, employee_id (nếu hợp lệ)
+P13 -down-> P14 : account_id, timestamp
+P13 -left-> User : JWT token + role
+
+P14 -right-> D1 : UPDATE last_login_at
+P14 -right-> D5 : INSERT AuditLog (LOGIN)
+
+P12 -left-> User : lỗi (sai mật khẩu / tài khoản bị khóa)
 
 @enduml

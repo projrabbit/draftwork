@@ -1,6 +1,18 @@
 @startuml DFD_L2_GIS_Management
 title DFD Level 2 – Tiến trình 4.0: Quản lý GIS & Geofence\n(UC-06: Quản lý Geofence, UC-07: Bản đồ 3D real-time,\nUC-17: Quản lý Tòa nhà & Tầng)
 
+' ===== Layout & readability =====
+left to right direction
+skinparam Shadowing false
+skinparam linetype ortho
+skinparam defaultTextAlignment center
+skinparam ArrowColor #2F3B4A
+skinparam ArrowThickness 1.1
+skinparam ArrowFontSize 11
+skinparam nodesep 95
+skinparam ranksep 110
+hide stereotype
+
 skinparam rectangle {
   BackgroundColor<<external>> LightYellow
   BorderColor<<external>> DarkGoldenRod
@@ -26,32 +38,50 @@ database "D4: Geofence" as D4G
 database "D2: Attendance\nRecord (realtime)" as D2
 database "D5: Audit Log" as D5
 
+' ===== Position anchors (for cleaner layout) =====
+Admin -[hidden]down-> ARCGIS
+
+P41 -[hidden]down-> P42
+P42 -[hidden]down-> P43
+
+Admin -[hidden]right-> P41
+ARCGIS -[hidden]right-> P42
+
+P41 -[hidden]right-> D4B
+P42 -[hidden]right-> D4G
+P43 -[hidden]right-> D2
+P42 -[hidden]right-> D5
+
+D4B -[hidden]down-> D4G
+D4G -[hidden]down-> D2
+D2 -[hidden]down-> D5
+
 ' UC-17: Building & Floor
-Admin --> P41 : tên tòa nhà, địa chỉ,\ncenter_lat/lng, total_floors,\narcgis_layer_id
-P41 --> ARCGIS : validate arcgis_layer_id
-ARCGIS --> P41 : kết quả validation
-P41 --> D4B : INSERT Building + Floor\n(floor_number, altitude_min/max)
-P41 --> D5 : AuditLog (BUILDING_CREATE)
-P41 --> Admin : xác nhận tạo thành công
-P41 --> ARCGIS : render tòa nhà trên bản đồ
+Admin -right-> P41 : tên tòa nhà, địa chỉ,\ncenter_lat/lng, total_floors,\narcgis_layer_id
+P41 -left-> ARCGIS : validate arcgis_layer_id
+ARCGIS -right-> P41 : kết quả validation
+P41 -right-> D4B : INSERT Building + Floor\n(floor_number, altitude_min/max)
+P41 -right-> D5 : AuditLog (BUILDING_CREATE)
+P41 -left-> Admin : xác nhận tạo thành công
+P41 -left-> ARCGIS : render tòa nhà trên bản đồ
 
 ' UC-06: Geofence
-Admin --> P42 : floor_id, center_lat/lng,\nradius_meters, altitude_min/max
-P42 --> D4G : SELECT Geofence WHERE floor_id=?\n(kiểm tra overlap)
-D4G --> P42 : existing geofences
-P42 --> D4G : INSERT/UPDATE Geofence\n(is_active, created_by)
-P42 --> D5 : AuditLog (GEOFENCE_CREATE/DELETE)
-P42 --> ARCGIS : vẽ / xóa vùng geofence trên bản đồ
-P42 --> Admin : xác nhận
+Admin -right-> P42 : floor_id, center_lat/lng,\nradius_meters, altitude_min/max
+P42 -right-> D4G : SELECT Geofence WHERE floor_id=?\n(kiểm tra overlap)
+D4G -left-> P42 : existing geofences
+P42 -right-> D4G : INSERT/UPDATE Geofence\n(is_active, created_by)
+P42 -right-> D5 : AuditLog (GEOFENCE_CREATE/DELETE)
+P42 -left-> ARCGIS : vẽ / xóa vùng geofence trên bản đồ
+P42 -left-> Admin : xác nhận
 
 ' UC-07: Real-time map
-Admin --> P43 : yêu cầu xem bản đồ\n(filter: building/floor/dept)
-P43 --> D2 : SELECT nhân viên đang check-in\n(chưa check-out hôm nay)
-D2 --> P43 : {employee_id, lat, lng, altitude}
-P43 --> D4B : SELECT Building + Floor info
-D4B --> P43 : thông tin tòa nhà / tầng
-P43 --> ARCGIS : tọa độ markers + arcgis_layer_id
-ARCGIS --> P43 : Scene View render
-P43 --> Admin : bản đồ 3D với markers nhân viên\n(auto-refresh mỗi 30s)
+Admin -right-> P43 : yêu cầu xem bản đồ\n(filter: building/floor/dept)
+P43 -right-> D2 : SELECT nhân viên đang check-in\n(chưa check-out hôm nay)
+D2 -left-> P43 : {employee_id, lat, lng, altitude}
+P43 -right-> D4B : SELECT Building + Floor info
+D4B -left-> P43 : thông tin tòa nhà / tầng
+P43 -left-> ARCGIS : tọa độ markers + arcgis_layer_id
+ARCGIS -right-> P43 : Scene View render
+P43 -left-> Admin : bản đồ 3D với markers nhân viên\n(auto-refresh mỗi 30s)
 
 @enduml

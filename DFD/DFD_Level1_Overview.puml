@@ -1,6 +1,18 @@
 @startuml DFD_Level1_Overview
 title DFD Level 1 – Tổng quan các tiến trình chính
 
+' ===== Layout & readability =====
+top to bottom direction
+skinparam Shadowing false
+skinparam linetype ortho
+skinparam defaultTextAlignment center
+skinparam ArrowColor #2F3B4A
+skinparam ArrowThickness 1.1
+skinparam ArrowFontSize 11
+skinparam nodesep 85
+skinparam ranksep 95
+hide stereotype
+
 skinparam rectangle {
   BackgroundColor<<external>> LightYellow
   BorderColor<<external>> DarkGoldenRod
@@ -36,44 +48,73 @@ database "D4: GIS\n(Building/Floor/Geofence)" as D4
 database "D5: Audit Log" as D5
 database "D6: Shift\n& Department" as D6
 
+' ===== Position anchors (3-band layout) =====
+NV -[hidden]right-> HR
+HR -[hidden]right-> CEO
+CEO -[hidden]right-> ARCGIS
+
+P1 -[hidden]right-> P2
+P2 -[hidden]right-> P3
+P3 -[hidden]right-> P4
+P4 -[hidden]right-> P5
+P5 -[hidden]right-> P6
+
+D1 -[hidden]right-> D2
+D2 -[hidden]right-> D3
+D3 -[hidden]right-> D4
+D4 -[hidden]right-> D5
+D5 -[hidden]right-> D6
+
+NV -[hidden]down-> P1
+HR -[hidden]down-> P4
+CEO -[hidden]down-> P6
+ARCGIS -[hidden]down-> P4
+
+P1 -[hidden]down-> D1
+P2 -[hidden]down-> D2
+P3 -[hidden]down-> D3
+P4 -[hidden]down-> D4
+P5 -[hidden]down-> D5
+P6 -[hidden]down-> D6
+
 ' === Flows ===
-NV --> P1 : credentials
-P1 --> NV : JWT token
-P1 --> D1 : UPDATE last_login_at
-D1 --> P1 : Account record
+NV -down-> P1 : credentials
+P1 -up-> NV : JWT token
+P1 -down-> D1 : UPDATE last_login_at
+D1 -up-> P1 : Account record
 
-NV --> P2 : GPS data + device_fingerprint
-P2 --> NV : kết quả chấm công
-P2 --> P3 : dữ liệu GPS + device
-P3 --> P2 : FraudResult
-P2 --> D2 : INSERT AttendanceRecord
-P2 --> D5 : INSERT AuditLog (CHECK_IN/OUT)
-D4 --> P2 : Geofence active
-D6 --> P2 : Shift info
-D1 --> P2 : Employee + Device info
+NV -down-> P2 : GPS data + device_fingerprint
+P2 -up-> NV : kết quả chấm công
+P2 -right-> P3 : dữ liệu GPS + device
+P3 -left-> P2 : FraudResult
+P2 -down-> D2 : INSERT AttendanceRecord
+P2 -down-> D5 : INSERT AuditLog (CHECK_IN/OUT)
+D4 -up-> P2 : Geofence active
+D6 -up-> P2 : Shift info
+D1 -up-> P2 : Employee + Device info
 
-P3 --> D3 : INSERT FraudDetection
-D2 --> P3 : lịch sử vị trí
+P3 -down-> D3 : INSERT FraudDetection
+D2 -up-> P3 : lịch sử vị trí
 
-HR --> P4 : cấu hình geofence / building
-P4 --> HR : danh sách geofence trên bản đồ
-P4 --> D4 : INSERT/UPDATE Geofence, Floor, Building
-P4 --> D5 : AuditLog
-D4 --> P4 : existing geofence data
-P4 --> ARCGIS : tọa độ marker / layer_id
-ARCGIS --> P4 : Scene View data
+HR -down-> P4 : cấu hình geofence / building
+P4 -up-> HR : danh sách geofence trên bản đồ
+P4 -down-> D4 : INSERT/UPDATE Geofence, Floor, Building
+P4 -down-> D5 : AuditLog
+D4 -up-> P4 : existing geofence data
+P4 -up-> ARCGIS : tọa độ marker / layer_id
+ARCGIS -down-> P4 : Scene View data
 
-HR --> P5 : quản lý nhân viên / shift / thiết bị
-P5 --> D1 : INSERT/UPDATE Employee, Account, Device
-P5 --> D6 : INSERT/UPDATE Shift, Department
-P5 --> D5 : AuditLog
+HR -down-> P5 : quản lý nhân viên / shift / thiết bị
+P5 -down-> D1 : INSERT/UPDATE Employee, Account, Device
+P5 -down-> D6 : INSERT/UPDATE Shift, Department
+P5 -down-> D5 : AuditLog
 
-HR --> P6 : bộ lọc báo cáo
-CEO --> P6 : yêu cầu dashboard
-P6 --> HR : báo cáo + dashboard KPI
-P6 --> CEO : dashboard KPI
-D2 --> P6 : AttendanceRecord (aggregate)
-D3 --> P6 : FraudDetection (count)
-D1 --> P6 : Employee info
+HR -down-> P6 : bộ lọc báo cáo
+CEO -down-> P6 : yêu cầu dashboard
+P6 -up-> HR : báo cáo + dashboard KPI
+P6 -up-> CEO : dashboard KPI
+D2 -up-> P6 : AttendanceRecord (aggregate)
+D3 -up-> P6 : FraudDetection (count)
+D1 -up-> P6 : Employee info
 
 @enduml

@@ -1,6 +1,18 @@
 @startuml DFD_Level0_Context
 title DFD Level 0 – Context Diagram\nHệ thống Chấm công Thông minh
 
+' ===== Layout & readability =====
+left to right direction
+skinparam Shadowing false
+skinparam linetype ortho
+skinparam defaultTextAlignment center
+skinparam ArrowColor #2F3B4A
+skinparam ArrowThickness 1.1
+skinparam ArrowFontSize 11
+skinparam nodesep 130
+skinparam ranksep 150
+hide stereotype
+
 skinparam rectangle {
   BackgroundColor<<external>> LightYellow
   BorderColor<<external>> DarkGoldenRod
@@ -18,16 +30,22 @@ rectangle "ArcGIS\nPlatform" <<external>> as ARCGIS
 
 rectangle "0\nHệ thống Chấm công\nThông minh" <<system>> as SYS
 
-NV --> SYS : Yêu cầu check-in/check-out\nThông tin GPS (lat/lng/alt)\nThông tin thiết bị
-SYS --> NV : Kết quả chấm công\nLịch sử cá nhân\nThông báo trạng thái
+' ===== Position anchors (for cleaner layout) =====
+NV -[hidden]down-> HR
+HR -[hidden]down-> CEO
+NV -[hidden]right-> SYS
+SYS -[hidden]right-> ARCGIS
 
-HR --> SYS : Cấu hình geofence / shift\nQuản lý nhân viên & thiết bị\nTra cứu ngoại lệ / audit log
-SYS --> HR : Báo cáo chấm công\nBản đồ GIS 3D real-time\nDashboard KPI\nCảnh báo gian lận
+NV -right-> SYS : Yêu cầu check-in/check-out\nThông tin GPS (lat/lng/alt)\nThông tin thiết bị
+SYS -left-> NV : Kết quả chấm công\nLịch sử cá nhân\nThông báo trạng thái
 
-CEO --> SYS : Yêu cầu xem Dashboard\nYêu cầu báo cáo tổng hợp
-SYS --> CEO : Dashboard KPI tổng quan\nBáo cáo chấm công
+HR -right-> SYS : Cấu hình geofence / shift\nQuản lý nhân viên & thiết bị\nTra cứu ngoại lệ / audit log
+SYS -left-> HR : Báo cáo chấm công\nBản đồ GIS 3D real-time\nDashboard KPI\nCảnh báo gian lận
 
-SYS --> ARCGIS : Layer ID tòa nhà\nDữ liệu tọa độ marker
-ARCGIS --> SYS : Bản đồ 3D Scene View\nXác nhận layer hợp lệ
+CEO -right-> SYS : Yêu cầu xem Dashboard\nYêu cầu báo cáo tổng hợp
+SYS -left-> CEO : Dashboard KPI tổng quan\nBáo cáo chấm công
+
+SYS -right-> ARCGIS : Layer ID tòa nhà\nDữ liệu tọa độ marker
+ARCGIS -left-> SYS : Bản đồ 3D Scene View\nXác nhận layer hợp lệ
 
 @enduml

@@ -1,6 +1,18 @@
 @startuml DFD_L2_Attendance
 title DFD Level 2 – Tiến trình 2.0: Chấm công\n(UC-02: Check-in, UC-03: Check-out,\nUC-04: Xem lịch sử, UC-05: Thông báo)
 
+' ===== Layout & readability =====
+left to right direction
+skinparam Shadowing false
+skinparam linetype ortho
+skinparam defaultTextAlignment center
+skinparam ArrowColor #2F3B4A
+skinparam ArrowThickness 1.1
+skinparam ArrowFontSize 10
+skinparam nodesep 85
+skinparam ranksep 95
+hide stereotype
+
 skinparam rectangle {
   BackgroundColor<<external>> LightYellow
   BorderColor<<external>> DarkGoldenRod
@@ -29,33 +41,58 @@ database "D4: Geofence\n& Floor" as D4
 database "D5: Audit Log" as D5
 database "D6: Shift" as D6
 
+' ===== Position anchors (for cleaner layout) =====
+NV -[hidden]down-> P3
+P3 -[hidden]right-> P21
+
+P21 -[hidden]down-> P22
+P22 -[hidden]down-> P23
+P23 -[hidden]down-> P24
+P24 -[hidden]down-> P25
+
+P21 -[hidden]right-> D1
+P22 -[hidden]right-> D4
+P23 -[hidden]right-> D6
+P23 -[hidden]right-> D2
+P23 -[hidden]right-> D5
+P25 -[hidden]right-> D2
+
+D1 -[hidden]down-> D4
+D4 -[hidden]down-> D6
+D6 -[hidden]down-> D2
+D2 -[hidden]down-> D5
+
 ' Check-in / Check-out flow
-NV --> P21 : GPS (lat/lng/alt/accuracy)\n+ device_fingerprint + type(in/out)
-P21 --> D1 : SELECT Employee + Device
-D1 --> P21 : Employee record + Device + is_trusted
+NV -right-> P21 : GPS (lat/lng/alt/accuracy)\n+ device_fingerprint + type(in/out)
+P21 -right-> D1 : SELECT Employee + Device
+D1 -left-> P21 : Employee record + Device + is_trusted
 
-P21 --> P3 : GPS data + device info
-P3 --> P21 : FraudResult {score, flags}
+P21 -left-> P3 : GPS data + device info
+P3 -right-> P21 : FraudResult {score, flags}
 
-P21 --> P22 : tọa độ GPS đã validate
-P22 --> D4 : SELECT Geofence WHERE is_active=TRUE\nAND altitude BETWEEN min AND max
-D4 --> P22 : active geofences
+P21 -down-> P22 : tọa độ GPS đã validate
+P22 -right-> D4 : SELECT active geofence\n(theo altitude)
+D4 -left-> P22 : active geofences
 P22 --> P22 : kiểm tra (lat,lng) trong radius
 
-P22 --> P23 : geofence_id / rejection_reason
-D6 --> P23 : SELECT Shift theo employee
+P22 -down-> P23 : geofence_id / rejection_reason
+D6 -left-> P23 : SELECT Shift theo employee
 P23 --> P23 : tính is_late / is_early_leave
 
-P23 --> D2 : INSERT AttendanceRecord\n(type, status, gps coords,\ngeofence_id, shift_id, flags)
-P23 --> D5 : INSERT AuditLog
-P23 --> P24 : kết quả chấm công
+P23 -right-> D2 : INSERT AttendanceRecord
+note right of P23
+Fields: type, status, gps coords,
+geofence_id, shift_id, flags
+end note
+P23 -right-> D5 : INSERT AuditLog
+P23 -down-> P24 : kết quả chấm công
 
-P24 --> NV : thông báo tức thời\n(approved / rejected + lý do)
+P24 -left-> NV : thông báo tức thời\n(approved / rejected + lý do)
 
 ' View history flow
-NV --> P25 : yêu cầu xem lịch sử\n(from, to date)
-P25 --> D2 : SELECT AttendanceRecord\nWHERE employee_id + time range
-D2 --> P25 : danh sách bản ghi
-P25 --> NV : lịch sử + tổng giờ làm
+NV -right-> P25 : yêu cầu xem lịch sử\n(from, to date)
+P25 -right-> D2 : SELECT AttendanceRecord\nWHERE employee_id + time range
+D2 -left-> P25 : danh sách bản ghi
+P25 -left-> NV : lịch sử + tổng giờ làm
 
 @enduml
