@@ -9,17 +9,19 @@ database "Database" as DB
 
 note over API, Fraud
     Chi tiết kiểm tra fraud, flags, confidence_score
-    và lưu FraudDetection tham chiếu UC-11.
+    (bao gồm face verification) và lưu
+    FraudDetection tham chiếu UC-11.
 end note
 
 NV -> App : Nhấn nút Check-in
 App -> App : Thu tọa độ GPS\n(lat, lng, altitude, accuracy)
-App -> API : POST /attendance/check-in\n{employee_id, device_fingerprint,\nlat, lng, altitude, gps_accuracy}
+App -> App : Chụp selfie + kiểm tra liveness\n(face_image, liveness_signals)
+App -> API : POST /attendance/check-in\n{employee_id, device_fingerprint,\nlat, lng, altitude, gps_accuracy,\nface_image, liveness_signals}
 
 API -> DB : SELECT Employee, Device, Shift\n(xác thực device, lấy default_shift)
 DB --> API : Employee + Shift + Device info
 
-API -> Fraud : checkFraud(employee_id, device_fingerprint,\nlat, lng, altitude, gps_accuracy)
+API -> Fraud : checkFraud(employee_id, device_fingerprint,\nlat, lng, altitude, gps_accuracy,\nface_image, liveness_signals)
 Fraud --> API : FraudResult\n{confidence_score, flags}
 
 API -> DB : SELECT Geofence active\nphù hợp với altitude
@@ -31,7 +33,7 @@ alt GPS accuracy kém (>50m)
     API -> DB : INSERT AuditLog (CHECK_IN_FAILED_GPS)
     API --> App : Kết quả check-in: failed_gps_accuracy
 
-else Phát hiện gian lận (theo UC-11)
+else Phát hiện gian lận (theo UC-11, gồm face mismatch/liveness fail)
     API -> DB : INSERT AttendanceRecord\n(type=check_in, status=rejected,\nrejection_reason=fraud_detected)
     API -> DB : INSERT AuditLog (CHECK_IN_REJECTED_FRAUD)
     API --> App : Kết quả check-in: rejected
