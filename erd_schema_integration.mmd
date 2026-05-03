@@ -1,0 +1,71 @@
+erDiagram
+    CELL_SPACE ||--o{ GEOFENCE_RULE : defines_rules
+    GEOFENCE_RULE ||--o{ ATTENDANCE_RECORD : validates
+    EMPLOYEE ||--o{ ATTENDANCE_RECORD : performs
+    DEVICE ||--o{ ATTENDANCE_RECORD : sends_gps
+    SHIFT ||--o{ ATTENDANCE_RECORD : scheduled_for
+    ATTENDANCE_RECORD ||--|| FRAUD_DETECTION : checked_by
+
+    CELL_SPACE {
+        INT cell_space_id PK
+        INT floor_id FK
+        STRING name
+        STRING space_type
+        STRING geometry_ref
+        DECIMAL altitude_min
+        DECIMAL altitude_max
+    }
+
+    GEOFENCE_RULE {
+        INT geofence_rule_id PK
+        INT cell_space_id FK
+        DECIMAL allowed_radius_m
+        DECIMAL altitude_min
+        DECIMAL altitude_max
+        BOOLEAN allow_checkin
+        BOOLEAN allow_checkout
+        BOOLEAN is_active
+    }
+
+    EMPLOYEE {
+        INT employee_id PK
+        STRING full_name
+        INT department_id FK
+        STRING status
+    }
+
+    DEVICE {
+        INT device_id PK
+        INT employee_id FK
+        STRING device_fingerprint
+        BOOLEAN is_trusted
+    }
+
+    SHIFT {
+        INT shift_id PK
+        STRING name
+        TIME start_time
+        TIME end_time
+    }
+
+    ATTENDANCE_RECORD {
+        BIGINT record_id PK
+        INT employee_id FK
+        INT device_id FK
+        INT shift_id FK
+        INT geofence_rule_id FK
+        DATETIME timestamp
+        DECIMAL latitude
+        DECIMAL longitude
+        DECIMAL altitude
+        STRING status
+    }
+
+    FRAUD_DETECTION {
+        BIGINT fraud_id PK
+        BIGINT record_id FK
+        BOOLEAN mock_location_detected
+        BOOLEAN gps_spoofing_detected
+        BOOLEAN buddy_punch_suspected
+        DECIMAL confidence_score
+    }
