@@ -1,0 +1,9 @@
+flowchart LR
+    ADM["Admin"]
+    P1("Tra cứu audit log")
+    D8[(Audit Log)]
+
+    ADM -->|"Điều kiện lọc log"| P1
+    P1 -->|"Truy vấn log theo điều kiện"| D8
+    D8 -->|"Danh sách log phù hợp"| P1
+    P1 -->|"Kết quả log và chi tiết"| ADM
