@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trang chủ chấm công</title>
+  <style>
+:root {
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #344054;
+      --soft: #f6f8fa;
+      --panel: #fff;
+      --accent: #e8f1ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #f1f3f5;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.35;
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .document-title {
+      border: 2px solid var(--line);
+      background: var(--panel);
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      border-radius: 14px;
+    }
+
+    .document-title h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+    }
+
+    .document-title p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .phone-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    .screen-card {
+      border: 2px solid var(--line);
+      background: #fff;
+      padding: 14px;
+      border-radius: 16px;
+    }
+
+    .screen-card h2 {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .screen-card .subtitle {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .phone {
+      width: 100%;
+      max-width: 390px;
+      min-height: 760px;
+      margin: 0 auto;
+      border: 3px solid var(--line);
+      border-radius: 28px;
+      background: var(--panel);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 20px 7px;
+      font-size: 12px;
+    }
+
+    .app-bar {
+      border-bottom: 2px solid var(--line);
+      padding: 14px 16px;
+      background: var(--soft);
+    }
+
+    .app-bar strong {
+      display: block;
+      font-size: 17px;
+    }
+
+    .app-bar small {
+      color: var(--muted);
+    }
+
+    .phone-body {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 2px solid var(--line);
+      background: var(--soft);
+    }
+
+    .bottom-nav div {
+      border-right: 1px solid var(--line);
+      padding: 10px 4px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .bottom-nav div:last-child {
+      border-right: 0;
+    }
+
+    .bottom-nav .active {
+      font-weight: 700;
+      background: var(--accent);
+    }
+
+    .box,
+    .card,
+    .input,
+    .button,
+    .placeholder,
+    .chip,
+    .textarea,
+    .tab {
+      border: 2px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+    }
+
+    .box,
+    .card {
+      padding: 12px;
+    }
+
+    .input,
+    .button,
+    .chip,
+    .tab {
+      padding: 10px;
+    }
+
+    .button {
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .button.secondary {
+      background: var(--soft);
+      font-weight: 400;
+    }
+
+    .button.large {
+      padding: 18px 12px;
+      font-size: 18px;
+    }
+
+    .input {
+      min-height: 42px;
+      color: var(--muted);
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .placeholder {
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      background: repeating-linear-gradient(45deg, #fff, #fff 10px, #f5f7fa 10px, #f5f7fa 20px);
+    }
+
+    .camera-placeholder {
+      min-height: 260px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      padding: 8px 0;
+      font-size: 14px;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .label {
+      color: var(--muted);
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .metric {
+      border: 2px solid var(--line);
+      padding: 12px;
+      text-align: center;
+      border-radius: 12px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .tab {
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      font-weight: 700;
+    }
+
+    .list-item {
+      border: 2px solid var(--line);
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 12px;
+    }
+
+    .list-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .list-item small {
+      color: var(--muted);
+    }
+
+    .status-box {
+      border: 2px dashed var(--line);
+      padding: 12px;
+      background: #fafafa;
+      border-radius: 12px;
+    }
+
+    .textarea {
+      min-height: 80px;
+      padding: 10px;
+      color: var(--muted);
+      white-space: pre-wrap;
+      border-radius: 12px;
+    }
+
+    .wire-note {
+      border: 1px dashed var(--line);
+      padding: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      background: #fafafa;
+      border-radius: 12px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="phone-grid">
+      <article class="screen-card">
+              <h2>Màn hình 2: Trang chủ chấm công</h2>
+              <p class="subtitle">Màn hình chính để nhân viên chấm công vào/ra</p>
+              <div class="phone">
+                <div class="status-bar"><span>09:41</span><span>Vị trí | Wi-Fi | Pin</span></div>
+                <div class="app-bar"><strong>Xin chào, Nguyễn Văn A</strong><small>Ca hành chính: 08:00 - 17:00</small></div>
+                <div class="phone-body">
+                  <div class="metric-row">
+                    <div class="metric"><strong>08:01</strong><span>Chấm công vào gần nhất</span></div>
+                    <div class="metric"><strong>7h 12m</strong><span>Giờ làm hôm nay</span></div>
+                  </div>
+                  <div class="box">
+                    <div class="row"><div class="label">Vị trí</div><div>Tòa A - Tầng 3</div></div>
+                    <div class="row"><div class="label">Định vị</div><div>Sẵn sàng kiểm tra vị trí hiện tại</div></div>
+                    <div class="row"><div class="label">Độ chính xác</div><div>12m, hợp lệ</div></div>
+                    <div class="row"><div class="label">Thiết bị</div><div>Đã đăng ký, chờ xác nhận</div></div>
+                  </div>
+                  <div class="placeholder">Bản đồ nhỏ / vị trí hiện tại trong vùng cho phép</div>
+                  <div class="button large">Chấm công vào</div>
+                  <div class="button secondary">Chấm công ra</div>
+                  <div class="wire-note">Khi nhấn chấm công vào/ra, app tự kiểm tra vị trí, thiết bị và khuôn mặt trước khi gửi kết quả.</div>
+                </div>
+                <div class="bottom-nav"><div class="active">Trang chủ</div><div>Lịch sử</div><div>Thông báo</div><div>Tài khoản</div></div>
+              </div>
+            </article>
+    </section>
+  </main>
+</body>
+</html>

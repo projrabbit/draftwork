@@ -27,7 +27,7 @@ Web Dashboard phục vụ nhóm người dùng quản lý gồm CEO, HR và Admi
 
 ### 2.1 Cấu Trúc Điều Hướng Dashboard
 
-Navbar của Dashboard được chuẩn hóa thống nhất trên các màn hình sau khi đăng nhập.
+Sidebar điều hướng của Dashboard được chuẩn hóa thống nhất trên các màn hình sau khi đăng nhập.
 
 | Mục điều hướng | Mục đích | Có wireframe |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ Thành phần chính:
 
 - Khu vực nhận diện hệ thống gồm logo hoặc tên hệ thống.
 - Form đăng nhập gồm email công ty và mật khẩu.
-- Trường vai trò thể hiện nhóm quyền sau xác thực như CEO, HR hoặc Admin.
+- Vùng mô tả nhóm quyền CEO, HR hoặc Admin sau xác thực; vai trò thực tế được hệ thống xác định từ tài khoản, không phải trường người dùng tự chọn.
 - Nút `Đăng nhập` để gửi thông tin xác thực.
 - Vùng thông báo lỗi cho các trường hợp sai mật khẩu, tài khoản bị khóa hoặc không có quyền truy cập Dashboard.
 
@@ -75,7 +75,7 @@ Luồng thao tác:
 | --- | --- |
 | Đối tượng | CEO, HR, Admin |
 | Mục đích | Cung cấp cái nhìn nhanh về tình hình chấm công trong ngày |
-| Navbar active | Tổng quan |
+| Sidebar active | Tổng quan |
 
 Thành phần chính:
 
@@ -109,7 +109,7 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | HR, Admin |
 | Mục đích | Theo dõi vị trí nhân viên đang làm việc trên bản đồ 3D |
-| Navbar active | Bản đồ 3D |
+| Sidebar active | Bản đồ 3D |
 
 Thành phần chính:
 
@@ -140,13 +140,13 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | HR, Admin |
 | Mục đích | Tạo, sửa, vô hiệu hóa vùng chấm công theo tòa nhà, tầng và khu vực làm việc |
-| Navbar active | Vùng chấm công |
+| Sidebar active | Vùng chấm công |
 
 Thành phần chính:
 
 - Bản đồ 3D để chọn tòa nhà, chọn tầng và vẽ khu vực chấm công.
 - Stack tầng giúp người quản trị chọn đúng tầng cần cấu hình.
-- Form tạo hoặc sửa vùng chấm công gồm tòa nhà, tầng, tên vùng, điểm trung tâm, khu vực áp dụng, bán kính và phạm vi tầng.
+- Form tạo hoặc sửa vùng chấm công gồm tòa nhà, tầng, tên vùng, tọa độ trung tâm lat/lng, khu vực áp dụng, bán kính, độ cao và phạm vi độ cao áp dụng cho tầng.
 - Nút `Lưu vùng chấm công` để lưu cấu hình.
 - Nút `Vô hiệu hóa` để tạm tắt vùng không còn sử dụng.
 - Bảng danh sách vùng chấm công gồm tên vùng, tòa nhà, tầng, bán kính, phạm vi và trạng thái.
@@ -173,7 +173,7 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | Admin |
 | Mục đích | Quản lý dữ liệu nền tòa nhà và tầng để hệ thống phân biệt vị trí theo độ cao |
-| Navbar active | Vùng chấm công |
+| Sidebar active | Vùng chấm công |
 
 Lý do cần màn hình này:
 
@@ -186,8 +186,8 @@ Thành phần chính:
 - Ghi chú giải thích vai trò của tòa nhà và tầng trong hệ thống.
 - Bảng danh sách tòa nhà gồm tên, địa chỉ, số tầng, trạng thái bản đồ 3D và trạng thái sử dụng.
 - Bảng danh sách tầng gồm số tầng, tên tầng, phạm vi tầng, vùng chấm công liên quan và ghi chú.
-- Form tạo hoặc sửa tòa nhà gồm tên, địa chỉ, vị trí trung tâm, số tầng và mã bản đồ 3D.
-- Form tạo hoặc sửa tầng gồm số tầng, tên tầng, từ độ cao và đến độ cao.
+- Form tạo hoặc sửa tòa nhà gồm tên, địa chỉ, vị trí trung tâm, số tầng và mã lớp bản đồ 3D hoặc `arcgis_layer_id`.
+- Form tạo hoặc sửa tầng gồm số tầng, tên tầng, `altitude_min` và `altitude_max`.
 - Nút `Lưu tòa nhà / tầng` để lưu dữ liệu.
 - Nút `Kiểm tra bản đồ 3D` để xác nhận dữ liệu bản đồ đã kết nối được hay chưa.
 
@@ -212,7 +212,7 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | CEO, HR, Admin |
 | Mục đích | Xem báo cáo chấm công theo khoảng thời gian và xuất file |
-| Navbar active | Báo cáo |
+| Sidebar active | Báo cáo |
 
 Thành phần chính:
 
@@ -245,13 +245,14 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | HR, Admin |
 | Mục đích | Xem và xử lý các lượt chấm công bất thường |
-| Navbar active | Ngoại lệ |
+| Sidebar active | Ngoại lệ |
 
 Thành phần chính:
 
 - Bộ lọc theo trạng thái, loại cảnh báo, từ ngày và đến ngày.
 - Bảng danh sách ngoại lệ gồm thời gian, nhân viên, loại, lý do, mức tin cậy và trạng thái xử lý.
-- Panel chi tiết ngoại lệ gồm mã lượt chấm, vị trí ghi nhận, khu vực cho phép, dấu hiệu, mức tin cậy và ghi chú.
+- Panel chi tiết ngoại lệ gồm mã lượt chấm, vị trí ghi nhận, khu vực cho phép, dấu hiệu gian lận, mức tin cậy và ghi chú.
+- Các dấu hiệu cần thể hiện gồm ngoài vùng cho phép, GPS không đủ chính xác, mock location/GPS spoofing, thiết bị lạ, sai khuôn mặt, liveness fail hoặc nghi ngờ chấm công hộ.
 - Nút `Phê duyệt thủ công` để chuyển lượt chấm công thành hợp lệ sau khi HR kiểm tra.
 - Nút `Giữ từ chối` để giữ nguyên trạng thái bị từ chối.
 - Ghi chú cho biết mọi thao tác xử lý đều được lưu vào nhật ký hệ thống.
@@ -278,7 +279,7 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | HR, Admin |
 | Mục đích | Màn hình tổng quan cho nhóm chức năng quản trị vận hành |
-| Navbar active | Quản trị |
+| Sidebar active | Quản trị |
 
 Thành phần chính:
 
@@ -303,7 +304,7 @@ Vai trò của màn hình này:
 | --- | --- |
 | Đối tượng | HR, Admin |
 | Mục đích | Quản lý hồ sơ nhân viên và tài khoản đăng nhập liên quan |
-| Navbar active | Quản trị |
+| Sidebar active | Quản trị |
 | Tab active | Nhân viên |
 
 Thành phần chính:
@@ -339,7 +340,7 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | HR, Admin |
 | Mục đích | Quản lý phòng ban, trưởng phòng và ca mặc định |
-| Navbar active | Quản trị |
+| Sidebar active | Quản trị |
 | Tab active | Phòng ban |
 
 Thành phần chính:
@@ -371,7 +372,7 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | HR, Admin |
 | Mục đích | Tạo ca làm, sửa ca và gán ca cho phòng ban hoặc nhân viên |
-| Navbar active | Quản trị |
+| Sidebar active | Quản trị |
 | Tab active | Ca làm việc |
 
 Thành phần chính:
@@ -405,7 +406,7 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | Admin |
 | Mục đích | Duyệt thiết bị mới và thu hồi thiết bị không còn được tin cậy |
-| Navbar active | Quản trị |
+| Sidebar active | Quản trị |
 | Tab active | Thiết bị |
 
 Thành phần chính:
@@ -438,7 +439,7 @@ Trạng thái cần thể hiện:
 | --- | --- |
 | Đối tượng | Admin |
 | Mục đích | Tra cứu lịch sử thao tác để kiểm tra và truy vết |
-| Navbar active | Nhật ký |
+| Sidebar active | Nhật ký |
 
 Thành phần chính:
 
@@ -519,7 +520,7 @@ Thành phần chính:
 - Lời chào nhân viên và thông tin ca làm hiện tại.
 - Card `Chấm công vào gần nhất`.
 - Card `Giờ làm hôm nay`.
-- Khối trạng thái gồm vị trí, định vị, độ chính xác và thiết bị.
+- Khối trạng thái gồm vị trí, định vị, độ chính xác GPS và trạng thái thiết bị tin cậy.
 - Bản đồ nhỏ hoặc vùng hiển thị vị trí hiện tại trong vùng cho phép.
 - Nút `Chấm công vào`.
 - Nút `Chấm công ra`.
@@ -539,7 +540,7 @@ Trạng thái cần thể hiện:
 - Đã chấm công vào.
 - Đã chấm công ra.
 - Vị trí chưa sẵn sàng.
-- Thiết bị đang chờ xác nhận.
+- Thiết bị đang chờ duyệt tin cậy.
 
 ### 5.3 Màn Hình 3: Xác Minh Vị Trí Và Gương Mặt
 
@@ -552,7 +553,8 @@ Trạng thái cần thể hiện:
 Thành phần chính:
 
 - Khung camera selfie để kiểm tra đúng người đang chấm công.
-- Danh sách bước xác minh gồm lấy vị trí hiện tại, kiểm tra độ tin cậy của vị trí, xác nhận khuôn mặt và kiểm tra vùng cho phép.
+- Danh sách bước xác minh gồm lấy vị trí GPS 3D, kiểm tra độ tin cậy của vị trí, xác nhận khuôn mặt, kiểm tra liveness và kiểm tra vùng cho phép.
+- Dữ liệu gửi đi gồm latitude, longitude, altitude, gps_accuracy, device_fingerprint, ảnh selfie và tín hiệu liveness.
 - Nút `Gửi yêu cầu chấm công`.
 - Nút `Hủy`.
 
@@ -561,7 +563,7 @@ Luồng thao tác:
 - Nhân viên nhấn chấm công ở Trang chủ.
 - App mở màn hình xác minh.
 - Nhân viên chụp selfie hoặc cho phép camera xác nhận.
-- App kiểm tra vị trí và thiết bị.
+- App kiểm tra vị trí GPS 3D, độ chính xác GPS, thiết bị và tín hiệu khuôn mặt/liveness.
 - Nhân viên nhấn `Gửi yêu cầu chấm công`.
 - App chuyển sang màn hình thông báo trạng thái.
 
@@ -569,7 +571,7 @@ Trạng thái cần thể hiện:
 
 - Đang lấy vị trí.
 - Camera chưa cấp quyền.
-- Vị trí không đủ tin cậy.
+- Vị trí không đủ tin cậy hoặc GPS accuracy kém.
 - Xác minh thành công và đang gửi yêu cầu.
 
 ### 5.4 Màn Hình 4: Thông Báo Trạng Thái
@@ -584,7 +586,7 @@ Thành phần chính:
 
 - Card trạng thái chính gồm kết quả, thông báo, vị trí và thời gian chờ.
 - Khối trường hợp ngoài vùng cho phép.
-- Khối trường hợp vị trí hoặc thiết bị không tin cậy.
+- Khối trường hợp vị trí, thiết bị hoặc xác minh khuôn mặt/liveness không tin cậy.
 - Khối trường hợp timeout hoặc lỗi kết nối.
 - Nút `Về trang chủ`.
 
@@ -593,7 +595,7 @@ Luồng thao tác:
 - App nhận kết quả xử lý chấm công.
 - Nếu thành công, app hiển thị thông báo chấm công thành công và vị trí ghi nhận.
 - Nếu ngoài vùng, app thông báo nhân viên đang ngoài khu vực chấm công.
-- Nếu vị trí hoặc thiết bị không tin cậy, app thông báo bị từ chối và hướng dẫn liên hệ HR.
+- Nếu vị trí, thiết bị, khuôn mặt hoặc liveness không tin cậy, app thông báo bị từ chối và hướng dẫn liên hệ HR.
 - Nếu lỗi mạng, app cho phép thử lại.
 - Nhân viên nhấn `Về trang chủ` để quay lại màn hình chính.
 
@@ -601,7 +603,7 @@ Trạng thái cần thể hiện:
 
 - Thành công.
 - Ngoài vùng cho phép.
-- Vị trí hoặc thiết bị không tin cậy.
+- Vị trí, thiết bị hoặc xác minh khuôn mặt/liveness không tin cậy.
 - Lỗi kết nối hoặc timeout.
 
 ### 5.5 Màn Hình 5: Lịch Sử Chấm Công Cá Nhân
@@ -680,26 +682,52 @@ Thành phần chính:
 
 - Placeholder ảnh đại diện hoặc khuôn mặt đã đăng ký.
 - Thông tin cá nhân gồm nhân viên, phòng ban, email và quyền.
-- Thông tin thiết bị hiện tại gồm hệ điều hành, dòng máy, mã thiết bị đã ẩn và trạng thái.
+- Thông tin thiết bị hiện tại gồm hệ điều hành, dòng máy, mã thiết bị đã ẩn và trạng thái tin cậy.
 - Nút `Đăng xuất`.
-- Wire note giải thích thiết bị chưa xác nhận sẽ nhắc nhân viên liên hệ HR/Admin.
+- Wire note giải thích thiết bị chưa được duyệt tin cậy sẽ nhắc nhân viên liên hệ HR/Admin.
 
 Luồng thao tác:
 
 - Nhân viên mở tab `Tài khoản`.
 - App hiển thị thông tin cá nhân.
-- App hiển thị thiết bị hiện tại và trạng thái xác nhận.
-- Nếu thiết bị chưa được xác nhận, nhân viên biết cần liên hệ HR/Admin.
+- App hiển thị thiết bị hiện tại và trạng thái tin cậy.
+- Nếu thiết bị chưa được duyệt tin cậy, nhân viên biết cần liên hệ HR/Admin.
 - Nhân viên có thể nhấn `Đăng xuất` để thoát tài khoản.
 
 Trạng thái cần thể hiện:
 
-- Thiết bị đã xác nhận.
-- Thiết bị đang chờ xác nhận.
+- Thiết bị đã được duyệt tin cậy.
+- Thiết bị đang chờ duyệt tin cậy.
 - Tài khoản đang hoạt động.
 - Tài khoản bị khóa sẽ không vào được màn hình này do bị chặn từ đăng nhập.
 
-## 6. Kiểm Tra Tính Đầy Đủ Theo Điều Hướng
+## 6. Kiểm Tra Tính Đầy Đủ Theo Chức Năng Và Điều Hướng
+
+### 6.1 Đối Chiếu Theo Use Case
+
+| Mã UC | Chức năng | Màn hình mockup liên quan | Ghi chú thể hiện trên wireframe |
+| --- | --- | --- | --- |
+| UC-01 | Đăng nhập hệ thống | Dashboard Màn hình 1, Mobile Màn hình 1 | Có form email/mật khẩu, thông báo lỗi và điều hướng sau đăng nhập theo vai trò. |
+| UC-02 | Thực hiện Check-in | Mobile Màn hình 2, 3, 4 | Có nút chấm công vào, bước xác minh GPS 3D/khuôn mặt/liveness và màn hình kết quả. |
+| UC-03 | Thực hiện Check-out | Mobile Màn hình 2, 3, 4 | Dùng chung luồng xác minh với check-in, có nút chấm công ra và phản hồi trạng thái. |
+| UC-04 | Xem lịch sử chấm công cá nhân | Mobile Màn hình 5 | Có bộ lọc ngày/tuần/tháng, tổng giờ, đi trễ, thiếu checkout và lượt bị từ chối. |
+| UC-05 | Nhận thông báo trạng thái chấm công | Mobile Màn hình 4, 6 | Có phản hồi tức thời sau chấm công và trung tâm thông báo để xem lại. |
+| UC-06 | Quản lý Geofence 3D | Dashboard Màn hình 4 | Có bản đồ 3D, form vùng chấm công theo tòa nhà/tầng/bán kính/độ cao và danh sách vùng. |
+| UC-07 | Xem bản đồ GIS 3D real-time | Dashboard Màn hình 3 | Có bản đồ 3D, marker nhân viên, lọc tòa nhà/tầng/phòng ban và tự cập nhật. |
+| UC-08 | Quản lý ca làm việc | Dashboard Màn hình 10 | Có danh sách ca, form tạo/sửa ca, gán ca nhanh và cảnh báo xung đột. |
+| UC-09 | Xem và xuất báo cáo chấm công | Dashboard Màn hình 5 | Có bộ lọc báo cáo, KPI tổng hợp, bảng chi tiết và nút xuất Excel/PDF. |
+| UC-10 | Quản lý ngoại lệ chấm công | Dashboard Màn hình 6 | Có danh sách ngoại lệ, panel chi tiết, phê duyệt thủ công và giữ từ chối. |
+| UC-11 | Phát hiện Mock Location / GPS Spoofing | Mobile Màn hình 3, 4; Dashboard Màn hình 6 | Đây là xử lý tự động, được thể hiện qua bước xác minh, thông báo bị từ chối và chi tiết ngoại lệ. |
+| UC-12 | Phát hiện chấm công hộ | Mobile Màn hình 3, 4; Dashboard Màn hình 6, 11 | Đây là xử lý tự động, được thể hiện qua kiểm tra thiết bị, cảnh báo ngoại lệ và quản lý thiết bị tin cậy. |
+| UC-13 | Quản lý thiết bị tin cậy | Dashboard Màn hình 11, Mobile Màn hình 7 | Có danh sách thiết bị, duyệt/thu hồi thiết bị và trạng thái thiết bị trên tài khoản nhân viên. |
+| UC-14 | Tra cứu Audit Log | Dashboard Màn hình 12 | Có bộ lọc, bảng log, panel chi tiết và ghi chú chỉ đọc. |
+| UC-15 | Quản lý nhân viên và phòng ban | Dashboard Màn hình 8, 9 | Có quản lý hồ sơ nhân viên, tài khoản liên quan, phòng ban và trạng thái hoạt động. |
+| UC-16 | Xem Dashboard tổng quan | Dashboard Màn hình 2 | Có KPI, mini-map, biểu đồ, danh sách nhanh và panel cảnh báo. |
+| UC-17 | Quản lý tòa nhà và tầng | Dashboard Màn hình 4.2 | Có danh sách tòa nhà/tầng, form tạo/sửa, độ cao tầng và kiểm tra bản đồ 3D. |
+
+UC-11 và UC-12 không có màn hình thao tác riêng vì đây là các chức năng tự động trong luồng check-in/check-out. Wireframe thể hiện kết quả của hai chức năng này qua màn hình xác minh, thông báo trạng thái, ngoại lệ và thiết bị tin cậy.
+
+### 6.2 Đối Chiếu Theo Điều Hướng
 
 | Giao diện | Mục điều hướng hoặc tab | Wireframe tương ứng |
 | --- | --- | --- |
